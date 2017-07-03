@@ -63,7 +63,7 @@ angular.module('coinBalanceApp')
         active: true,
         userCurrency: false,
         symbol: '&Xi;',
-        owned: 9.81293
+        owned: 9.77817
       },
       EUR: {
         active: true,

@@ -51,7 +51,7 @@ angular.module('coinBalanceApp')
         active: true,
         userCurrency: false,
         symbol: 'BTC',
-        owned: 0.00001
+        owned: 0.44674
       },
       DASH: {
         active: true,
