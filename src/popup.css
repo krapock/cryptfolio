@@ -1,0 +1,49 @@
+body{
+  color:#333;
+  font-family:monospace;
+  font-size:12px
+}
+
+h1{
+  font-size: 18px
+}
+
+table{
+  border-collapse:collapse
+}
+tr:nth-child(odd){
+  background-color: #eee;
+}
+tr:last-child{
+  border-top: 1px solid #333;
+}
+th{
+  background-color: #333;
+  color:#fff;
+  font-weight:bolder;
+  min-width: 100px;
+}
+.positive{
+  color:green;
+}
+.negative{
+  color:red;
+}
+
+
+
+.extnum.increase {
+  animation: tickup .5s linear 1;
+}
+
+@keyframes tickup {
+  from { background-color:green; }
+}
+
+.extnum.decrease {
+  animation: tickdown .5s linear 1;
+}
+
+@keyframes tickdown {
+  from { background-color:red; }
+}

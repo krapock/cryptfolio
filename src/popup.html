@@ -1,0 +1,62 @@
+<!doctype html>
+<html  ng-app="coinBalanceApp">
+  <head>
+    <title>My crypto assets</title>
+    <script src="js/lib/angular.min.js"></script>
+    <script src="js/lib/angular-sanitize.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/components/extNum.js"></script>
+    <script src="js/ctrl/portfolio.js"></script>
+    <link rel='stylesheet' href="popup.css"/>
+  </head>
+  <body>
+    <h1>Portfolio</h1>
+    <div id="portfolioTable" ng-controller="PortfolioController as portfolio">
+      <table>
+        <tbody>
+          <tr>
+            <th>currency</th>
+            <th>owned</th>
+            <th>rate</th>
+            <th>origin</th>
+            <th>move</th>
+            <th>final</th>
+          </tr>
+          <tr ng-repeat="(currency,config) in portfolio.currencies"
+              ng-if="config.active">
+            <td ng-bind="currency"></td>
+            <td>
+              <ext-num number="config.owned" decimals="4" symbol="config.symbol" />
+            </td>
+            <td>
+              <ext-num number="portfolio.tableData[currency].rate" decimals="4" symbol="portfolio.currencies[portfolio.config.selectedCurrency].symbol" />
+            </td>
+            <td>
+                <ext-num number="portfolio.tableData[currency].openingVal" symbol="portfolio.currencies[portfolio.config.selectedCurrency].symbol" />
+            </td>
+            <td>
+                <ext-num number="portfolio.tableData[currency].moveVal" symbol="portfolio.currencies[portfolio.config.selectedCurrency].symbol" />
+            </td>
+            <td>
+                <ext-num number="portfolio.tableData[currency].val" symbol="portfolio.currencies[portfolio.config.selectedCurrency].symbol" />
+            </td>
+          </tr>
+          <tr>
+            <td>Total</td>
+            <td/>
+            <td/>
+            <td>
+              <ext-num number="portfolio.tableData.total.openingVal" symbol="portfolio.currencies[portfolio.config.selectedCurrency].symbol" />
+            </td>
+            <td>
+              <ext-num number="portfolio.tableData.total.moveVal" symbol="portfolio.currencies[portfolio.config.selectedCurrency].symbol" />
+            </td>
+            <td>
+              <ext-num number="portfolio.tableData.total.val" symbol="portfolio.currencies[portfolio.config.selectedCurrency].symbol" />
+            </td>
+          <tr/>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
