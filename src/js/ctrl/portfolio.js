@@ -1,5 +1,5 @@
 angular.module('coinBalanceApp')
-.controller('PortfolioController', function($http, $q) {
+  .controller('PortfolioController', function($http, $q) {
 
     var portfolio = this;
     portfolio.config = {
@@ -51,7 +51,7 @@ angular.module('coinBalanceApp')
         active: true,
         userCurrency: false,
         symbol: 'BTC',
-        owned: 0.44674
+        owned: 0.94674
       },
       DASH: {
         active: true,
@@ -63,7 +63,7 @@ angular.module('coinBalanceApp')
         active: true,
         userCurrency: false,
         symbol: '&Xi;',
-        owned: 9.77817
+        owned: 5
       },
       EUR: {
         active: true,
@@ -120,48 +120,48 @@ angular.module('coinBalanceApp')
       portfolio.refreshPortfolioTableData();
     };
 
-        portfolio.refreshPortfolioTableData = function() {
-          var userCurr = portfolio.config.selectedCurrency;
-          var total = {
-            openingVal: 0,
-            val: 0,
-            moveVal: 0
-          };
-          for (var currency in portfolio.currencies) {
-            var conf = portfolio.currencies[currency];
-            var market = portfolio.market[currency];
-            var line = {
-              openingRate: 0,
-              rate: 0,
-              movePerc: 0,
-              openingVal: 0,
-              val: 0,
-              moveVal: 0
-            };
+    portfolio.refreshPortfolioTableData = function() {
+      var userCurr = portfolio.config.selectedCurrency;
+      var total = {
+        openingVal: 0,
+        val: 0,
+        moveVal: 0
+      };
+      for (var currency in portfolio.currencies) {
+        var conf = portfolio.currencies[currency];
+        var market = portfolio.market[currency];
+        var line = {
+          openingRate: 0,
+          rate: 0,
+          movePerc: 0,
+          openingVal: 0,
+          val: 0,
+          moveVal: 0
+        };
 
-            if (market[userCurr]) {
-              line.openingRate = market[userCurr].opening;
-              line.rate = market[userCurr].val;
-              line.movePerc = line.rate * 100 / line.openingRate;
-              line.openingVal = line.openingRate * conf.owned;
-              line.val = line.rate * conf.owned;
-              line.moveVal = line.val - line.openingVal;
+        if (market[userCurr]) {
+          line.openingRate = market[userCurr].opening;
+          line.rate = market[userCurr].val;
+          line.movePerc = line.rate * 100 / line.openingRate;
+          line.openingVal = line.openingRate * conf.owned;
+          line.val = line.rate * conf.owned;
+          line.moveVal = line.val - line.openingVal;
 
-              total.openingVal += line.openingVal;
-              total.val += line.val;
-              total.moveVal += line.moveVal;
-            }
-
-            portfolio.tableData[currency] = line;
-          }
-          portfolio.tableData.total = total;
+          total.openingVal += line.openingVal;
+          total.val += line.val;
+          total.moveVal += line.moveVal;
         }
 
+        portfolio.tableData[currency] = line;
+      }
+      portfolio.tableData.total = total;
+    }
 
-    portfolio.updateKrakenValues = function(){
+
+    portfolio.updateKrakenValues = function() {
       portfolio.getKrakenTransactionValues().then(function() {
         portfolio.refreshPortfolioTableData();
-        setTimeout(portfolio.updateKrakenValues,5000);
+        setTimeout(portfolio.updateKrakenValues, 5000);
       });
     }
 
