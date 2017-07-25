@@ -51,7 +51,7 @@ angular.module('coinBalanceApp')
         active: true,
         userCurrency: false,
         symbol: 'BTC',
-        owned: 0.94674
+        owned: 0.81438
       },
       DASH: {
         active: true,
@@ -142,7 +142,9 @@ angular.module('coinBalanceApp')
         if (market[userCurr]) {
           line.openingRate = market[userCurr].opening;
           line.rate = market[userCurr].val;
-          line.movePerc = line.rate * 100 / line.openingRate;
+          line.moveRate = line.rate - line.openingRate;
+          line.movePerc = (line.moveRate * 100) / line.openingRate;
+
           line.openingVal = line.openingRate * conf.owned;
           line.val = line.rate * conf.owned;
           line.moveVal = line.val - line.openingVal;

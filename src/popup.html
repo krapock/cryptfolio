@@ -17,19 +17,31 @@
           <tr>
             <th>currency</th>
             <th>owned</th>
-            <th>rate</th>
-            <th>origin</th>
-            <th>move</th>
-            <th>final</th>
+            <th>ex:origin</th>
+            <th>ex:move</th>
+            <th>ex:final</th>
+            <th>ex:move%</th>
+            <th>val:origin</th>
+            <th>val:move</th>
+            <th>val:final</th>
           </tr>
           <tr ng-repeat="(currency,config) in portfolio.currencies"
               ng-if="config.active">
-            <td ng-bind="currency"></td>
-            <td>
+            <th ng-bind="currency"></th>
+            <th>
               <ext-num number="config.owned" decimals="4" symbol="config.symbol" />
+            </th>
+            <td>
+              <ext-num number="portfolio.tableData[currency].openingRate" decimals="4" symbol="portfolio.currencies[portfolio.config.selectedCurrency].symbol" />
+            </td>
+            <td>
+              <ext-num number="portfolio.tableData[currency].moveRate" decimals="4" symbol="portfolio.currencies[portfolio.config.selectedCurrency].symbol" />
             </td>
             <td>
               <ext-num number="portfolio.tableData[currency].rate" decimals="4" symbol="portfolio.currencies[portfolio.config.selectedCurrency].symbol" />
+            </td>
+            <td>
+              <ext-num number="portfolio.tableData[currency].movePerc" decimals="2" symbol="'%'" />
             </td>
             <td>
                 <ext-num number="portfolio.tableData[currency].openingVal" symbol="portfolio.currencies[portfolio.config.selectedCurrency].symbol" />
@@ -42,7 +54,10 @@
             </td>
           </tr>
           <tr>
-            <td>Total</td>
+            <th/>
+            <th>Total</th>
+            <td/>
+            <td/>
             <td/>
             <td/>
             <td>
