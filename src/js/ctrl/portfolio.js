@@ -1,105 +1,9 @@
 angular.module('coinBalanceApp')
-  .controller('PortfolioController', function($http, $q) {
+  .controller('PortfolioController', function(data, $http, $q) {
 
     var portfolio = this;
-    portfolio.config = {
-      selectedCurrency: 'EUR',
-      devmode: false,
-      fixtures: {
-        krakenticker: {
-          "error": [],
-          "result": {
-            "DASHEUR": {
-              "a": ["156.999960", "1", "1.000"],
-              "b": ["155.520780", "8", "8.000"],
-              "c": ["155.520590", "1.60401431"],
-              "v": ["287.84991203", "2516.31904935"],
-              "p": ["157.014732", "155.872282"],
-              "t": [220, 1078],
-              "l": ["153.100590", "150.820010"],
-              "h": ["158.759560", "162.967930"],
-              "o": "153.990000"
-            },
-            "XETHZEUR": {
-              "a": ["255.99000", "6", "6.000"],
-              "b": ["255.60015", "1", "1.000"],
-              "c": ["255.99000", "4.16781406"],
-              "v": ["29951.63638439", "180158.49554444"],
-              "p": ["254.43974", "262.11348"],
-              "t": [6582, 35335],
-              "l": ["250.02000", "250.02000"],
-              "h": ["261.72000", "281.83717"],
-              "o": "256.49993"
-            },
-            "XXBTZEUR": {
-              "a": ["2201.50000", "1", "1.000"],
-              "b": ["2200.01000", "13", "13.000"],
-              "c": ["2201.68000", "0.84952373"],
-              "v": ["1712.99664915", "8876.39917875"],
-              "p": ["2208.10158", "2224.47225"],
-              "t": [5007, 25920],
-              "l": ["2188.66000", "2187.13000"],
-              "h": ["2232.00000", "2265.00000"],
-              "o": "2213.20000"
-            }
-          }
-        }
-      }
-    };
-    portfolio.currencies = {
-      XBT: {
-        active: true,
-        userCurrency: false,
-        symbol: 'BTC',
-        owned: 0.81438
-      },
-      DASH: {
-        active: true,
-        userCurrency: false,
-        symbol: 'DASH',
-        owned: 0
-      },
-      ETH: {
-        active: true,
-        userCurrency: false,
-        symbol: '&Xi;',
-        owned: 5
-      },
-      EUR: {
-        active: true,
-        userCurrency: true,
-        symbol: '&euro;',
-        owned: 500
-      },
-      USD: {
-        active: true,
-        userCurrency: false,
-        symbol: '$',
-        owned: 0
-      }
-    };
+    portfolio.currencies = data.currencies;
     portfolio.market = {};
-    portfolio.apiMetas = {
-      kraken: {
-        currencies: {
-          USD: {
-            name: 'ZUSD'
-          },
-          EUR: {
-            name: 'ZEUR'
-          },
-          ETH: {
-            name: 'XETH'
-          },
-          DASH: {
-            name: 'DASH'
-          },
-          XBT: {
-            name: 'XXBT'
-          }
-        }
-      }
-    };
     portfolio.tableData = {};
 
 
@@ -110,7 +14,7 @@ angular.module('coinBalanceApp')
     };
 
     portfolio.initializeMarketValues = function() {
-      for (var currency in portfolio.currencies) {
+      for (var currency in data.currencies) {
         portfolio.market[currency] = {};
         portfolio.market[currency][currency] = {
           opening: 1,
@@ -121,7 +25,7 @@ angular.module('coinBalanceApp')
     };
 
     portfolio.refreshPortfolioTableData = function() {
-      var userCurr = portfolio.config.selectedCurrency;
+      var userCurr = data.config.selectedCurrency;
       var total = {
         openingVal: 0,
         val: 0,
@@ -168,7 +72,7 @@ angular.module('coinBalanceApp')
     }
 
     portfolio.getKrakenTransactionValues = function() {
-      var apiCurrencies = portfolio.apiMetas.kraken.currencies;
+      var apiCurrencies = data.apiMetas.kraken.currencies;
 
       var getCurrencyPairList = function(baseCurrencies, targetCurrencies,
         apiCurrencies) {
@@ -201,12 +105,12 @@ angular.module('coinBalanceApp')
       }
 
       var fetchKrakenTickerData = function(pairs) {
-        if (portfolio.config.devmode) {
+        if (data.config.devmode) {
           console.info("fake kraken call");
           deferred = $q.defer();
           setTimeout(function() {
             deferred.resolve({
-              data: portfolio.config.fixtures.krakenticker
+              data: data.config.fixtures.krakenticker
             });
           }, 500);
           return (deferred.promise);
@@ -216,19 +120,27 @@ angular.module('coinBalanceApp')
         }
       }
 
-      var krakenCall = fetchKrakenTickValues(this.currencies);
+      var krakenCall = fetchKrakenTickValues(data.currencies);
+
       krakenCall.then(function(call) {
-        portfolio.market.DASH['EUR'] = {
-          'opening': call.data.result.DASHEUR.o,
-          'val': call.data.result.DASHEUR.c[0]
-        };
-        portfolio.market.XBT['EUR'] = {
-          'opening': call.data.result.XXBTZEUR.o,
-          'val': call.data.result.XXBTZEUR.c[0]
-        };
-        portfolio.market.ETH['EUR'] = {
-          'opening': call.data.result.XETHZEUR.o,
-          'val': call.data.result.XETHZEUR.c[0]
+        var result = call.data.result;
+        if (portfolio.market.DASH && result.DASHEUR) {
+          portfolio.market.DASH['EUR'] = {
+            'opening': result.DASHEUR.o,
+            'val': result.DASHEUR.c[0]
+          };
+        }
+        if (portfolio.market.XBT && result.XXBTZEUR) {
+          portfolio.market.XBT['EUR'] = {
+            'opening': result.XXBTZEUR.o,
+            'val': result.XXBTZEUR.c[0]
+          };
+        }
+        if (portfolio.market.ETH && result.XETHZEUR) {
+          portfolio.market.ETH['EUR'] = {
+            'opening': result.XETHZEUR.o,
+            'val': result.XETHZEUR.c[0]
+          }
         }
       });
       return krakenCall;
