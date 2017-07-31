@@ -26,12 +26,12 @@ angular.module('coinBalanceApp')
         if (!changes.number.isFirstChange()) {
           if (changes.number.currentValue > changes.number.previousValue +
             valueThreshold) {
-            console.log('ticking up : ' + ctrl.number);
+            //            console.log('ticking up : ' + ctrl.number);
             ctrl.tickMove = '+';
 
           } else if (changes.number.currentValue < changes.number.previousValue -
             valueThreshold) {
-            console.log('ticking down : ' + ctrl.number);
+            //            console.log('ticking down : ' + ctrl.number);
             ctrl.tickMove = '-';
           }
         }
