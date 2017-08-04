@@ -31,7 +31,8 @@
               ng-if="config.active">
             <th ng-bind="currency"></th>
             <th>
-              <ext-num number="config.owned" decimals="4" symbol="config.symbol" />
+              <!-- make this changeable ! -->
+              <ext-num editable="true" number="config.owned" decimals="4" symbol="config.symbol" />
             </th>
             <td>
               <ext-num number="portfolio.tableData[currency].openingRate" decimals="4" symbol="portfolio.userSymbol" />

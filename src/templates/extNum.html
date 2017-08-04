@@ -1,4 +1,4 @@
 <span class="extnum" ng-class="{positive:$ctrl.globalMove=='+',negative:$ctrl.globalMove=='-',increase:$ctrl.tickMove=='+',decrease:$ctrl.tickMove=='-'}">
-    <span class="extnum-value" ng-bind="$ctrl.numberShown"></span>
+    <span class="extnum-value" ng-bind="$ctrl.numberShown" ng-click="$ctrl.onclick()"></span>
     <span class="extnum-symbol" ng-bind-html="$ctrl.symbol"></span>
 </span>
