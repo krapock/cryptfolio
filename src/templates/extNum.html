@@ -1,4 +1,5 @@
 <span class="extnum" ng-class="{positive:$ctrl.globalMove=='+',negative:$ctrl.globalMove=='-',increase:$ctrl.tickMove=='+',decrease:$ctrl.tickMove=='-'}">
-    <span class="extnum-value" ng-bind="$ctrl.numberShown" ng-click="$ctrl.onclick()"></span>
+    <span ng-if="!$ctrl.isEdited" class="extnum-value" ng-bind="$ctrl.numberShown" ng-click="$ctrl.onclick()"></span>
+    <input ng-if="$ctrl.isEdited" ng-model="$ctrl.editValue" type="text" ng-keypress="$ctrl.onchange($event)"></input>
     <span class="extnum-symbol" ng-bind-html="$ctrl.symbol"></span>
 </span>

@@ -11,8 +11,14 @@ angular.module('coinBalanceApp')
       ctrl.numberShown = '0.00';
       ctrl.symbol = '';
       ctrl.editable = false;
+      ctrl.isEdited = false;
+      ctrl.editValue = "";
 
       ctrl.$onChanges = function(changes) {
+          ctrl.update(changes);
+        },
+
+        ctrl.update = function(changes) {
 
           var valueThreshold = Math.pow(0.1, ctrl.decimals || 2);
 
@@ -24,7 +30,7 @@ angular.module('coinBalanceApp')
 
           ctrl.tickMove = '=';
 
-          if (!changes.number.isFirstChange()) {
+          if (changes && !changes.number.isFirstChange()) {
             if (changes.number.currentValue > changes.number.previousValue +
               valueThreshold) {
               //            console.log('ticking up : ' + ctrl.number);
@@ -41,7 +47,15 @@ angular.module('coinBalanceApp')
         },
         ctrl.onclick = function(e) {
           if (ctrl.editable) {
-            console.info("edit !");
+            ctrl.isEdited = true;
+            ctrl.editValue = "" + ctrl.number;
+          }
+        },
+        ctrl.onchange = function(e) {
+          if (e.charCode == 13) {
+            ctrl.isEdited = false;
+            ctrl.number = Number.parseFloat(ctrl.editValue.replace(",", "."));
+            ctrl.update();
           }
         }
     },
