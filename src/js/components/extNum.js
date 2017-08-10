@@ -13,6 +13,7 @@ angular.module('coinBalanceApp')
       ctrl.editable = false;
       ctrl.isEdited = false;
       ctrl.editValue = "";
+      ctrl.onEdit = 'oopz';
 
       ctrl.$onChanges = function(changes) {
           ctrl.update(changes);
@@ -55,7 +56,12 @@ angular.module('coinBalanceApp')
           if (e.charCode == 13) {
             ctrl.isEdited = false;
             ctrl.number = Number.parseFloat(ctrl.editValue.replace(",", "."));
-            ctrl.update();
+            if (ctrl.onEdit) {
+              ctrl.onEdit({
+                'value': Number.parseFloat(ctrl.editValue.replace(",",
+                  "."))
+              });
+            }
           }
         }
     },
@@ -63,6 +69,7 @@ angular.module('coinBalanceApp')
       editable: '<',
       number: '<',
       decimals: '<',
-      symbol: '<'
+      symbol: '<',
+      onEdit: '&'
     }
   });

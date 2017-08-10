@@ -32,7 +32,7 @@
             <th ng-bind="currency"></th>
             <th>
               <!-- make this changeable ! -->
-              <ext-num editable="true" number="config.owned" decimals="4" symbol="config.symbol" />
+              <ext-num editable="true" on-edit="portfolio.setOwned(currency,value)" number="config.owned" decimals="4" symbol="config.symbol" />
             </th>
             <td>
               <ext-num number="portfolio.tableData[currency].openingRate" decimals="4" symbol="portfolio.userSymbol" />

@@ -130,6 +130,11 @@ angular.module('coinBalanceApp')
       settings.save(stringData);
     }
 
+    data.setOwned = function(currency, owned) {
+      data.currencies[currency].owned = owned;
+      data.saveSettings();
+    }
+
     //bootstrap
     data.fetchSettings();
     return data;

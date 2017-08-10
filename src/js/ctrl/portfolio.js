@@ -146,6 +146,11 @@ angular.module('coinBalanceApp')
       return krakenCall;
     }
 
+
+    portfolio.setOwned = function(curr, num) {
+      data.setOwned(curr, num);
+    }
+
     //bootstrap
     portfolio.init();
   });
