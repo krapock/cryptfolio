@@ -1,5 +1,5 @@
 angular.module('coinBalanceApp')
-  .controller('PortfolioController', function(data, $http, $q) {
+  .controller('PortfolioController', function(data, kraken) {
 
     var portfolio = this;
     portfolio.currencies = data.currencies;
@@ -10,7 +10,15 @@ angular.module('coinBalanceApp')
 
     portfolio.init = function() {
       portfolio.initializeMarketValues();
-      portfolio.updateKrakenValues();
+      kraken.addListener(function(data) {
+        for (var from in data) {
+          for (var to in data) {
+            portfolio.market[from][to] = data[from][to];
+          }
+        }
+        portfolio.refreshPortfolioTableData();
+      });
+      kraken.startTicker();
     };
 
     portfolio.initializeMarketValues = function() {
@@ -62,90 +70,6 @@ angular.module('coinBalanceApp')
       }
       portfolio.tableData.total = total;
     }
-
-
-    portfolio.updateKrakenValues = function() {
-      portfolio.getKrakenTransactionValues().then(function() {
-        portfolio.refreshPortfolioTableData();
-        setTimeout(portfolio.updateKrakenValues, 5000);
-      });
-    }
-
-    portfolio.getKrakenTransactionValues = function() {
-      var apiCurrencies = data.apiMetas.kraken.currencies;
-
-      var getCurrencyPairList = function(baseCurrencies, targetCurrencies,
-        apiCurrencies) {
-        var pairs = [];
-        for (let base in baseCurrencies) {
-          for (let target in targetCurrencies) {
-            let basename = apiCurrencies[baseCurrencies[base]].name;
-            let targetName = apiCurrencies[targetCurrencies[target]].name;
-            //avoid same assets and fiat-to-fiat
-            if (basename != targetName &&
-              (!basename.startsWith('Z') || !targetName.startsWith('Z'))) {
-
-              pairs.push(basename.replace(/^[XZ]/, '') + targetName.replace(
-                /^[XZ]/, ''));
-            }
-          }
-        }
-        return pairs.join(',');
-      };
-
-      var fetchKrakenTickValues = function(currenciesPrefs) {
-        var bases = [];
-        var targets = [];
-        for (let c in currenciesPrefs) {
-          if (currenciesPrefs[c].active) bases.push(c);
-          if (currenciesPrefs[c].userCurrency) targets.push(c);
-        }
-        var pairs = getCurrencyPairList(bases, targets, apiCurrencies);
-        return fetchKrakenTickerData(pairs);
-      }
-
-      var fetchKrakenTickerData = function(pairs) {
-        if (data.config.devmode) {
-          console.info("fake kraken call");
-          deferred = $q.defer();
-          setTimeout(function() {
-            deferred.resolve({
-              data: data.config.fixtures.krakenticker
-            });
-          }, 500);
-          return (deferred.promise);
-        } else {
-          return $http.get("https://api.kraken.com/0/public/Ticker?pair=" +
-            pairs);
-        }
-      }
-
-      var krakenCall = fetchKrakenTickValues(data.currencies);
-
-      krakenCall.then(function(call) {
-        var result = call.data.result;
-        if (portfolio.market.DASH && result.DASHEUR) {
-          portfolio.market.DASH['EUR'] = {
-            'opening': result.DASHEUR.o,
-            'val': result.DASHEUR.c[0]
-          };
-        }
-        if (portfolio.market.XBT && result.XXBTZEUR) {
-          portfolio.market.XBT['EUR'] = {
-            'opening': result.XXBTZEUR.o,
-            'val': result.XXBTZEUR.c[0]
-          };
-        }
-        if (portfolio.market.ETH && result.XETHZEUR) {
-          portfolio.market.ETH['EUR'] = {
-            'opening': result.XETHZEUR.o,
-            'val': result.XETHZEUR.c[0]
-          }
-        }
-      });
-      return krakenCall;
-    }
-
 
     portfolio.setOwned = function(curr, num) {
       data.setOwned(curr, num);
