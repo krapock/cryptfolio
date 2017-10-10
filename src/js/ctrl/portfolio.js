@@ -5,7 +5,7 @@ angular.module('coinBalanceApp')
     portfolio.currencies = data.currencies;
     portfolio.market = {};
     portfolio.tableData = {};
-    portfolio.userSymbol = data.currencies[data.config.selectedCurrency].symbol;
+    portfolio.userCurrency = data.currencies[data.config.selectedCurrency];
 
 
     portfolio.init = function() {

@@ -16,10 +16,25 @@ angular.module('coinBalanceApp')
       ctrl.onEdit = 'oopz';
 
       ctrl.$onChanges = function(changes) {
+          ctrl.setPrefs(changes.currency, changes.decimals, changes.symbol);
           ctrl.update(changes);
         },
+        ctrl.setPrefs = function(currency, decimals, symbol) {
+          if (currency && currency.currentValue && currency.currentValue.decimals) {
+            ctrl.decimals = currency.currentValue.decimals;
+          }
+          if (currency && currency.currentValue && currency.currentValue.symbol) {
+            ctrl.symbol = currency.currentValue.symbol;
+          }
+          if (decimals && decimals.currentValue) {
+            ctrl.decimals = decimals.currentValue;
+          }
+          if (symbol && symbol.currentValue) {
+            ctrl.symbol = symbol.currentValue;
+          }
+        }
 
-        ctrl.update = function(changes) {
+      ctrl.update = function(changes) {
 
           var valueThreshold = Math.pow(0.1, ctrl.decimals || 2);
 
@@ -67,6 +82,7 @@ angular.module('coinBalanceApp')
     },
     bindings: {
       editable: '<',
+      currency: '<',
       number: '<',
       decimals: '<',
       symbol: '<',

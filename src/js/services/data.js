@@ -10,30 +10,35 @@ angular.module('coinBalanceApp')
         active: true,
         userCurrency: false,
         symbol: 'BTC',
+        decimals: 4,
         owned: 0
       },
       DASH: {
         active: false,
         userCurrency: false,
         symbol: 'DASH',
+        decimals: 2,
         owned: 0
       },
       ETH: {
         active: true,
         userCurrency: false,
         symbol: '&Xi;',
+        decimals: 2,
         owned: 0
       },
       EUR: {
         active: true,
         userCurrency: true,
         symbol: '&euro;',
+        decimals: 2,
         owned: 0
       },
       USD: {
         active: false,
         userCurrency: false,
         symbol: '$',
+        decimals: 2,
         owned: 0
       }
     };

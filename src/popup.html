@@ -16,65 +16,50 @@
     <h1>Portfolio</h1>
     <div id="portfolioTable" ng-controller="PortfolioController as portfolio">
       <table>
-        <tbody>
-          <tr>
-            <th>currency</th>
-            <th>owned</th>
-            <th>ex:origin</th>
-            <th>ex:move</th>
-            <th>ex:final</th>
-            <th>ex:move%</th>
-            <th>val:origin</th>
-            <th>val:move</th>
-            <th>val:final</th>
-          </tr>
-          <tr ng-repeat="(currency,config) in portfolio.currencies"
+        <tr>
+          <th></th>
+          <th ng-repeat="(currency,config) in portfolio.currencies"
+              ng-if="config.active"
+              ng-bind="currency">
+          </th>
+          <th>total</th>
+        </tr>
+        <tr>
+          <th>owned</th>
+          <td ng-repeat="(currency,config) in portfolio.currencies"
               ng-if="config.active">
-            <th ng-bind="currency"></th>
-            <th>
-              <!-- make this changeable ! -->
-              <ext-num editable="true" on-edit="portfolio.setOwned(currency,value)" number="config.owned" decimals="4" symbol="config.symbol" />
-            </th>
-            <td>
-              <ext-num number="portfolio.tableData[currency].openingRate" decimals="4" symbol="portfolio.userSymbol" />
-            </td>
-            <td>
-              <ext-num number="portfolio.tableData[currency].moveRate" decimals="4" symbol="portfolio.userSymbol" />
-            </td>
-            <td>
-              <ext-num number="portfolio.tableData[currency].rate" decimals="4" symbol="portfolio.userSymbol" />
-            </td>
-            <td>
-              <ext-num number="portfolio.tableData[currency].movePerc" decimals="2" symbol="'%'" />
-            </td>
-            <td>
-                <ext-num number="portfolio.tableData[currency].openingVal" symbol="portfolio.userSymbol" />
-            </td>
-            <td>
-                <ext-num number="portfolio.tableData[currency].moveVal" symbol="portfolio.userSymbol" />
-            </td>
-            <td>
-                <ext-num number="portfolio.tableData[currency].val" symbol="portfolio.userSymbol" />
-            </td>
-          </tr>
-          <tr>
-            <th/>
-            <th>Total</th>
-            <td/>
-            <td/>
-            <td/>
-            <td/>
-            <td>
-              <ext-num number="portfolio.tableData.total.openingVal" symbol="portfolio.userSymbol" />
-            </td>
-            <td>
-              <ext-num number="portfolio.tableData.total.moveVal" symbol="portfolio.userSymbol" />
-            </td>
-            <td>
-              <ext-num number="portfolio.tableData.total.val" symbol="portfolio.userSymbol" />
-            </td>
-          <tr/>
-        </tbody>
+              <ext-num editable="true" on-edit="portfolio.setOwned(currency,value)" number="config.owned" currency="config" />
+          </td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>ex:final</th>
+          <td ng-repeat="(currency,config) in portfolio.currencies"
+              ng-if="config.active">
+              <ext-num editable="true" number="portfolio.tableData[currency].rate" currency="portfolio.userCurrency" />
+          </td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>val:move</th>
+          <td ng-repeat="(currency,config) in portfolio.currencies"
+              ng-if="config.active">
+              <ext-num editable="true" number="portfolio.tableData[currency].moveVal" currency="portfolio.userCurrency" />
+          </td>
+          <td>
+            <ext-num number="portfolio.tableData.total.moveVal" currency="portfolio.userCurrency" />
+          </td>
+        </tr>
+        <tr>
+          <th>val:move</th>
+          <td ng-repeat="(currency,config) in portfolio.currencies"
+              ng-if="config.active">
+              <ext-num editable="true" number="portfolio.tableData[currency].val" currency="portfolio.userCurrency" />
+          </td>
+          <td>
+            <ext-num number="portfolio.tableData.total.val" currency="portfolio.userCurrency"/>
+          </td>
+        </tr>
       </table>
     </div>
   </body>
