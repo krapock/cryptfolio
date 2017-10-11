@@ -32,26 +32,44 @@
           </td>
           <td></td>
         </tr>
-        <tr>
+        <tr class="subcat">
           <th>ex:final</th>
           <td ng-repeat="(currency,config) in portfolio.currencies"
               ng-if="config.active">
-              <ext-num editable="true" number="portfolio.tableData[currency].rate" currency="portfolio.userCurrency" />
+              <ext-num number="portfolio.tableData[currency].rate" currency="portfolio.userCurrency" />
           </td>
           <td></td>
         </tr>
         <tr>
-          <th>val:move</th>
+          <th>ex:move</th>
           <td ng-repeat="(currency,config) in portfolio.currencies"
               ng-if="config.active">
-              <ext-num editable="true" number="portfolio.tableData[currency].moveVal" currency="portfolio.userCurrency" />
+              <ext-num number="portfolio.tableData[currency].movePerc" symbol="%" decimals="3" signed="true" />
+          </td>
+          <td></td>
+        </tr>
+        <tr class="subcat">
+          <th>val:origin</th>
+          <td ng-repeat="(currency,config) in portfolio.currencies"
+              ng-if="config.active">
+              <ext-num number="portfolio.tableData[currency].openingVal" currency="portfolio.userCurrency" />
           </td>
           <td>
-            <ext-num number="portfolio.tableData.total.moveVal" currency="portfolio.userCurrency" />
+            <ext-num number="portfolio.tableData.total.openingVal" currency="portfolio.userCurrency" />
           </td>
         </tr>
         <tr>
           <th>val:move</th>
+          <td ng-repeat="(currency,config) in portfolio.currencies"
+              ng-if="config.active">
+              <ext-num number="portfolio.tableData[currency].moveVal" currency="portfolio.userCurrency" signed="true" />
+          </td>
+          <td>
+            <ext-num number="portfolio.tableData.total.moveVal" currency="portfolio.userCurrency" signed="true" />
+          </td>
+        </tr>
+        <tr>
+          <th>val:total</th>
           <td ng-repeat="(currency,config) in portfolio.currencies"
               ng-if="config.active">
               <ext-num editable="true" number="portfolio.tableData[currency].val" currency="portfolio.userCurrency" />

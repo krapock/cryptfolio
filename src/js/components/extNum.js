@@ -10,16 +10,21 @@ angular.module('coinBalanceApp')
       ctrl.tickMove = '=';
       ctrl.numberShown = '0.00';
       ctrl.symbol = '';
+      ctrl.signed = false;
       ctrl.editable = false;
       ctrl.isEdited = false;
       ctrl.editValue = "";
       ctrl.onEdit = 'oopz';
 
       ctrl.$onChanges = function(changes) {
-          ctrl.setPrefs(changes.currency, changes.decimals, changes.symbol);
+          ctrl.setPrefs(
+            changes.currency,
+            changes.decimals,
+            changes.symbol,
+            changes.signed);
           ctrl.update(changes);
         },
-        ctrl.setPrefs = function(currency, decimals, symbol) {
+        ctrl.setPrefs = function(currency, decimals, symbol, signed) {
           if (currency && currency.currentValue && currency.currentValue.decimals) {
             ctrl.decimals = currency.currentValue.decimals;
           }
@@ -31,6 +36,10 @@ angular.module('coinBalanceApp')
           }
           if (symbol && symbol.currentValue) {
             ctrl.symbol = symbol.currentValue;
+          }
+
+          if (signed && signed.currentValue) {
+            ctrl.signed = true;
           }
         }
 
@@ -59,7 +68,9 @@ angular.module('coinBalanceApp')
             }
           }
 
-          ctrl.numberShown = $filter('currency')(ctrl.number, '', ctrl.decimals);
+          var shown = (ctrl.signed && ctrl.number >= 0) ? '+' : '';
+          shown += $filter('currency')(ctrl.number, '', ctrl.decimals);
+          ctrl.numberShown = shown;
         },
         ctrl.onclick = function(e) {
           if (ctrl.editable) {
@@ -85,7 +96,8 @@ angular.module('coinBalanceApp')
       currency: '<',
       number: '<',
       decimals: '<',
-      symbol: '<',
+      symbol: '@',
+      signed: '<',
       onEdit: '&'
     }
   });

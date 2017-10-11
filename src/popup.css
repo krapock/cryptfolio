@@ -14,7 +14,7 @@ table{
 tr:nth-child(odd){
   background-color: #eee;
 }
-tr:last-child{
+tr.subcat{
   border-top: 1px solid #333;
 }
 th{
