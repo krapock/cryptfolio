@@ -9,7 +9,7 @@ angular.module('coinBalanceApp')
 
     $scope.$watch(() => data.config.selectedCurrency, (curr) => {
       portfolio.userCurrency = data.currencies[curr];
-
+      portfolio.refreshPortfolioTableData();
     });
 
 
@@ -69,6 +69,7 @@ angular.module('coinBalanceApp')
           total.openingVal += line.openingVal;
           total.val += line.val;
           total.moveVal += line.moveVal;
+          total.movePerc = (total.moveVal * 100) / total.openingVal;
         }
 
         portfolio.tableData[currency] = line;
