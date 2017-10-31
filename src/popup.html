@@ -48,10 +48,22 @@
     </div>
     <h1>Configuration</h1>
     <div id="configTable" ng-controller="ConfigController as config">
-      <div ng-repeat="(currency,currCfg) in config.currencies">
-        <label for="cfgCur{{currency}}" ng-bind="currency"></label>
-        <input id="cfgCur{{currency}}" type="checkbox" ng-model="currCfg.active" ng-change="config.save()"/>
-        <input id="cfgCur{{currency}}" type="checkbox" ng-model="currCfg.userCurrency" ng-change="config.save()"/>
+      <div id="enableConf">
+        <span>enabled : </span>
+        <div ng-repeat="(currency,currCfg) in config.currencies"
+              ng-class="['currency-option',{'active':currCfg.active, 'fiat':currCfg.userCurrency}]"
+              ng-bind="currency"
+              ng-click="config.toggle(currency)">
+        </div>
+      </div>
+      <div id="mainConf">
+        <span>user currency : </span>
+        <div ng-repeat="(currency,currCfg) in config.currencies"
+              ng-class="['currency-option',{'active':config.main.selectedCurrency==currency}]"
+              ng-if="currCfg.userCurrency"
+              ng-bind="currency"
+              ng-click="config.toggleMain(currency)">
+        </div>
       </div>
     </div>
   </body>

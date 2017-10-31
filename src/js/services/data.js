@@ -36,7 +36,7 @@ angular.module('coinBalanceApp')
       },
       USD: {
         active: true,
-        userCurrency: false,
+        userCurrency: true,
         symbol: '$',
         decimals: 2,
         owned: 0
@@ -68,12 +68,18 @@ angular.module('coinBalanceApp')
       settings.fetch((rawUsrData) => {
         //        console.log("fetched settings");
         var usrData = JSON.parse(rawUsrData);
-        if (usrData && usrData.portfolio) {
-          for (var curr in usrData.portfolio) {
-            data.currencies[curr].active = usrData.portfolio[curr].active;
-            data.currencies[curr].owned = usrData.portfolio[curr].owned;
-            data.currencies[curr].userCurrency = usrData.portfolio[curr]
-              .userCurrency;
+        if (usrData) {
+          if (usrData.config) {
+            data.config = usrData.config;
+          }
+          if (usrData.portfolio) {
+            for (var curr in usrData.portfolio) {
+              data.currencies[curr].active = usrData.portfolio[curr].active;
+              data.currencies[curr].owned = usrData.portfolio[curr].owned;
+              data.currencies[curr].userCurrency = usrData.portfolio[
+                  curr]
+                .userCurrency;
+            }
           }
         }
       });
@@ -81,7 +87,8 @@ angular.module('coinBalanceApp')
 
     data.saveSettings = () => {
       var usrData = {
-        portfolio: {}
+        portfolio: {},
+        config: data.config
       };
       for (var curr in data.currencies) {
         usrData.portfolio[curr] = {

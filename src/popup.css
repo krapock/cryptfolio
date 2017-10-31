@@ -76,3 +76,33 @@ h1{
 @keyframes tickdown {
   from { background-color:red; }
 }
+
+
+/*config*/
+#configTable > div {
+  margin-bottom: 5px;
+}
+#enableConf, #mainConf {
+    display: flex;
+    flex-direction: row;
+}
+div#configTable .currency-option{
+  border :2px outset #666;
+  color: #888;
+  background-color: #ddd;
+  margin: 0 2px;
+  padding: 0 2px;
+  font-weight: bold;
+}
+div#configTable .currency-option.fiat{
+  color: #a44;
+}
+div#configTable .currency-option.active{
+  color: #333;
+  background-color: #dfd;
+  border-style:inset;
+}
+div#configTable .currency-option.active.fiat{
+  color: #d44;
+  background-color: #fdd;
+}

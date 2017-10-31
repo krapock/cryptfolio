@@ -1,11 +1,16 @@
 angular.module('coinBalanceApp')
-  .controller('PortfolioController', function(data, kraken) {
+  .controller('PortfolioController', function(data, kraken, $scope) {
 
     var portfolio = this;
     portfolio.currencies = data.currencies;
     portfolio.market = {};
     portfolio.tableData = {};
     portfolio.userCurrency = data.currencies[data.config.selectedCurrency];
+
+    $scope.$watch(() => data.config.selectedCurrency, (curr) => {
+      portfolio.userCurrency = data.currencies[curr];
+
+    });
 
 
     portfolio.init = function() {
