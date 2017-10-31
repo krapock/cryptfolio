@@ -147,6 +147,24 @@ angular.module('coinBalanceApp')
             'val': result.XETHZEUR.c[0]
           }
         }
+        if (kraken.data.market.DASH && result.DASHUSD) {
+          kraken.data.market.DASH['USD'] = {
+            'opening': result.DASHUSD.o,
+            'val': result.DASHUSD.c[0]
+          };
+        }
+        if (kraken.data.market.XBT && result.XXBTZUSD) {
+          kraken.data.market.XBT['USD'] = {
+            'opening': result.XXBTZUSD.o,
+            'val': result.XXBTZUSD.c[0]
+          };
+        }
+        if (kraken.data.market.ETH && result.XETHZUSD) {
+          kraken.data.market.ETH['USD'] = {
+            'opening': result.XETHZUSD.o,
+            'val': result.XETHZUSD.c[0]
+          }
+        }
       });
       return krakenCall;
     }

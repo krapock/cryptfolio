@@ -10,75 +10,49 @@
     <script src="js/services/data.js"></script>
     <script src="js/services/kraken.js"></script>
     <script src="js/ctrl/portfolio.js"></script>
+    <script src="js/ctrl/config.js"></script>
     <link rel='stylesheet' href="popup.css"/>
   </head>
   <body>
     <h1>Portfolio</h1>
     <div id="portfolioTable" ng-controller="PortfolioController as portfolio">
-      <table>
-        <tr>
-          <th></th>
-          <th ng-repeat="(currency,config) in portfolio.currencies"
-              ng-if="config.active"
-              ng-bind="currency">
-          </th>
-          <th>total</th>
-        </tr>
-        <tr>
-          <th>owned</th>
-          <td ng-repeat="(currency,config) in portfolio.currencies"
-              ng-if="config.active">
-              <ext-num editable="true" on-edit="portfolio.setOwned(currency,value)" number="config.owned" currency="config" />
-          </td>
-          <td></td>
-        </tr>
-        <tr class="subcat">
-          <th>ex:final</th>
-          <td ng-repeat="(currency,config) in portfolio.currencies"
-              ng-if="config.active">
-              <ext-num number="portfolio.tableData[currency].rate" currency="portfolio.userCurrency" />
-          </td>
-          <td></td>
-        </tr>
-        <tr>
-          <th>ex:move</th>
-          <td ng-repeat="(currency,config) in portfolio.currencies"
-              ng-if="config.active">
-              <ext-num number="portfolio.tableData[currency].movePerc" symbol="%" decimals="3" signed="true" />
-          </td>
-          <td></td>
-        </tr>
-        <tr class="subcat">
-          <th>val:origin</th>
-          <td ng-repeat="(currency,config) in portfolio.currencies"
-              ng-if="config.active">
-              <ext-num number="portfolio.tableData[currency].openingVal" currency="portfolio.userCurrency" />
-          </td>
-          <td>
-            <ext-num number="portfolio.tableData.total.openingVal" currency="portfolio.userCurrency" />
-          </td>
-        </tr>
-        <tr>
-          <th>val:move</th>
-          <td ng-repeat="(currency,config) in portfolio.currencies"
-              ng-if="config.active">
-              <ext-num number="portfolio.tableData[currency].moveVal" currency="portfolio.userCurrency" signed="true" />
-          </td>
-          <td>
-            <ext-num number="portfolio.tableData.total.moveVal" currency="portfolio.userCurrency" signed="true" />
-          </td>
-        </tr>
-        <tr>
-          <th>val:total</th>
-          <td ng-repeat="(currency,config) in portfolio.currencies"
-              ng-if="config.active">
-              <ext-num editable="true" number="portfolio.tableData[currency].val" currency="portfolio.userCurrency" />
-          </td>
-          <td>
-            <ext-num number="portfolio.tableData.total.val" currency="portfolio.userCurrency"/>
-          </td>
-        </tr>
-      </table>
+      <div class="labels">
+        <h3 class="title">&nbsp;</h3>
+        <span>owned</span>
+        <span>rate</span>
+        <span>move</span>
+        <span>val:opening</span>
+        <span>val:move</span>
+        <span>val:now</span>
+      </div>
+      <div class="currency"
+          ng-repeat="(currency,config) in portfolio.currencies"
+          ng-if="config.active">
+          <h3 class="title" ng-bind="currency"></h3>
+          <ext-num name="owned" editable="true" on-edit="portfolio.setOwned(currency,value)" number="config.owned" currency="config"></ext-num>
+          <ext-num name="rate" number="portfolio.tableData[currency].rate" currency="portfolio.userCurrency"></ext-num>
+          <ext-num name="movePerc" number="portfolio.tableData[currency].movePerc" symbol="%" decimals="3" signed="true"></ext-num>
+          <ext-num name="valOpening" number="portfolio.tableData[currency].openingVal" currency="portfolio.userCurrency"></ext-num>
+          <ext-num name="moveVal" number="portfolio.tableData[currency].moveVal" currency="portfolio.userCurrency" signed="true"></ext-num>
+          <ext-num name="valNow" editable="true" number="portfolio.tableData[currency].val" currency="portfolio.userCurrency"></ext-num>
+      </div>
+      <div class="currency total">
+          <h3 class="title">total</h3>
+          <span class="spacer"></span>
+          <span class="spacer"></span>
+          <ext-num name="movePerc" number="portfolio.tableData.total.movePerc" symbol="%" decimals="3" signed="true"></ext-num>
+          <ext-num name="valOpening" number="portfolio.tableData.total.openingVal" currency="portfolio.userCurrency"></ext-num>
+          <ext-num name="moveVal" number="portfolio.tableData.total.moveVal" currency="portfolio.userCurrency" signed="true"></ext-num>
+          <ext-num name="valNow" editable="true" number="portfolio.tableData.total.val" currency="portfolio.userCurrency"></ext-num>
+      </div>
+    </div>
+    <h1>Configuration</h1>
+    <div id="configTable" ng-controller="ConfigController as config">
+      <div ng-repeat="(currency,currCfg) in config.currencies">
+        <label for="cfgCur{{currency}}" ng-bind="currency"></label>
+        <input id="cfgCur{{currency}}" type="checkbox" ng-model="currCfg.active" ng-change="config.save()"/>
+        <input id="cfgCur{{currency}}" type="checkbox" ng-model="currCfg.userCurrency" ng-change="config.save()"/>
+      </div>
     </div>
   </body>
 </html>

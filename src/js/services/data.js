@@ -35,7 +35,7 @@ angular.module('coinBalanceApp')
         owned: 0
       },
       USD: {
-        active: false,
+        active: true,
         userCurrency: false,
         symbol: '$',
         decimals: 2,

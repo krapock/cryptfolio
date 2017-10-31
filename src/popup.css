@@ -1,3 +1,4 @@
+/* MAIN */
 body{
   color:#333;
   font-family:monospace;
@@ -8,29 +9,57 @@ h1{
   font-size: 18px
 }
 
-table{
-  border-collapse:collapse
+.spacer:after{
+  content: "\00a0";
 }
-tr:nth-child(odd){
+
+/* portfolio */
+#portfolioTable {
+    display: flex;
+    flex-direction: row;
+}
+#portfolioTable .currency {
+    display: flex;
+    flex-direction: column;
+}
+
+#portfolioTable .currency h3.title,
+#portfolioTable .labels *{
+  display: inline-block;
+    background-color: #333;
+    color:#fff;
+    font-weight:bolder;
+    min-width: 100px;
+    margin: 0;
+}
+#portfolioTable .currency h3.title{
+  text-align:center;
+}
+#portfolioTable .labels *{
+  text-align:right;
+  padding-right: 5px;
+}
+
+#portfolioTable .currency > *{
+  background-color: #fff;
+}
+#portfolioTable .currency > *:nth-child(odd) {
   background-color: #eee;
 }
-tr.subcat{
+
+#portfolioTable .subcat {
   border-top: 1px solid #333;
 }
-th{
-  background-color: #333;
-  color:#fff;
-  font-weight:bolder;
-  min-width: 100px;
-}
+
+
+/* TICKERZ */
+
 .positive{
   color:green;
 }
 .negative{
   color:red;
 }
-
-
 
 .extnum.increase {
   animation: tickup .5s linear 1;
