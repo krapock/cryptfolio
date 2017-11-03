@@ -5,43 +5,60 @@ angular.module('coinBalanceApp')
       selectedCurrency: 'EUR',
       devmode: false,
     };
-    data.currencies = {
+    data.currenciesConstants = {
       XBT: {
-        active: true,
         userCurrency: false,
         symbol: 'BTC',
-        decimals: 4,
-        owned: 0
+        decimals: 4
+      },
+      DASH: {
+        userCurrency: false,
+        symbol: 'DASH',
+        decimals: 2
+      },
+      ETH: {
+        userCurrency: false,
+        symbol: '&Xi;',
+        decimals: 2
+      },
+      EUR: {
+        userCurrency: true,
+        symbol: '&euro;',
+        decimals: 2
+      },
+      USD: {
+        userCurrency: true,
+        symbol: '$',
+        decimals: 2
+      }
+    };
+
+    data.currenciesDefaults = {
+      XBT: {
+        active: true,
+        owned: 1
       },
       DASH: {
         active: false,
-        userCurrency: false,
-        symbol: 'DASH',
-        decimals: 2,
         owned: 0
       },
       ETH: {
         active: true,
-        userCurrency: false,
-        symbol: '&Xi;',
-        decimals: 2,
         owned: 0
       },
       EUR: {
         active: true,
-        userCurrency: true,
-        symbol: '&euro;',
-        decimals: 2,
         owned: 0
       },
       USD: {
         active: true,
-        userCurrency: true,
-        symbol: '$',
-        decimals: 2,
         owned: 0
       }
     };
+
+    data.currencies = {}
+    angular.merge(data.currencies, data.currenciesDefaults, data.currenciesConstants);
+
     data.apiMetas = {
       kraken: {
         currencies: {
@@ -70,16 +87,10 @@ angular.module('coinBalanceApp')
         var usrData = JSON.parse(rawUsrData);
         if (usrData) {
           if (usrData.config) {
-            data.config = usrData.config;
+            angular.merge(data.config, usrData.config);
           }
           if (usrData.portfolio) {
-            for (var curr in usrData.portfolio) {
-              data.currencies[curr].active = usrData.portfolio[curr].active;
-              data.currencies[curr].owned = usrData.portfolio[curr].owned;
-              data.currencies[curr].userCurrency = usrData.portfolio[
-                  curr]
-                .userCurrency;
-            }
+            angular.merge(data.currencies, usrData.portfolio, data.currenciesConstants);
           }
         }
       });
@@ -88,15 +99,10 @@ angular.module('coinBalanceApp')
     data.saveSettings = () => {
       var usrData = {
         portfolio: {},
-        config: data.config
+        config: {}
       };
-      for (var curr in data.currencies) {
-        usrData.portfolio[curr] = {
-          active: data.currencies[curr].active,
-          userCurrency: data.currencies[curr].userCurrency,
-          owned: data.currencies[curr].owned,
-        }
-      }
+      angular.merge(usrData.config, data.config);
+      angular.merge(usrData.portfolio, data.currencies);
       var stringData = JSON.stringify(usrData);
       //      console.log("saving settings");
       settings.save(stringData);

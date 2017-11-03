@@ -19,8 +19,9 @@
       <div class="labels">
         <h3 class="title">&nbsp;</h3>
         <span>owned</span>
-        <span>rate</span>
+        <span>openingRate</span>
         <span>move</span>
+        <span>rate</span>
         <span>val:opening</span>
         <span>val:move</span>
         <span>val:now</span>
@@ -30,14 +31,16 @@
           ng-if="config.active">
           <h3 class="title" ng-bind="currency"></h3>
           <ext-num name="owned" editable="true" on-edit="portfolio.setOwned(currency,value)" number="config.owned" currency="config"></ext-num>
-          <ext-num name="rate" number="portfolio.tableData[currency].rate" currency="portfolio.userCurrency"></ext-num>
+          <ext-num name="openingRate" number="portfolio.tableData[currency].openingRate" currency="portfolio.userCurrency"></ext-num>
           <ext-num name="movePerc" number="portfolio.tableData[currency].movePerc" symbol="%" decimals="3" signed="true"></ext-num>
+          <ext-num name="rate" number="portfolio.tableData[currency].rate" currency="portfolio.userCurrency"></ext-num>
           <ext-num name="valOpening" number="portfolio.tableData[currency].openingVal" currency="portfolio.userCurrency"></ext-num>
           <ext-num name="moveVal" number="portfolio.tableData[currency].moveVal" currency="portfolio.userCurrency" signed="true"></ext-num>
           <ext-num name="valNow" editable="true" number="portfolio.tableData[currency].val" currency="portfolio.userCurrency"></ext-num>
       </div>
       <div class="currency total">
           <h3 class="title">total</h3>
+          <span class="spacer"></span>
           <span class="spacer"></span>
           <span class="spacer"></span>
           <ext-num name="movePerc" number="portfolio.tableData.total.movePerc" symbol="%" decimals="3" signed="true"></ext-num>
