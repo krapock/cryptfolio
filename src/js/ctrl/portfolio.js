@@ -1,5 +1,7 @@
 angular.module('coinBalanceApp')
-  .controller('PortfolioController', function(menu, data, market, $scope) {
+  .controller('PortfolioController', function(persist, menu, data, market,
+    $scope) {
+    const STORE_KEY = "coin-balance-portfolio";
 
     var portfolio = this;
     portfolio.currencies = data.currencies;
@@ -7,14 +9,16 @@ angular.module('coinBalanceApp')
     portfolio.userCurrency = data.currencies[data.config.selectedCurrency];
 
     $scope.$watch(() => data.config.selectedCurrency, (curr) => {
-      portfolio.userCurrency = data.currencies[curr];
-      portfolio.refreshPortfolioTableData(market.rates);
+      if (portfolio.userCurrency != data.currencies[curr]) {
+        portfolio.userCurrency = data.currencies[curr];
+        portfolio.refreshPortfolioTableData(market.rates);
+      }
     });
 
     portfolio.init = function() {
-      portfolio.refreshPortfolioTableData(market.rates);
-      market.addListener(function(data) {
-        portfolio.refreshPortfolioTableData(data);
+      portfolio.fetch();
+      market.addListener(function(rates) {
+        portfolio.refreshPortfolioTableData(rates);
       });
     };
 
@@ -57,10 +61,19 @@ angular.module('coinBalanceApp')
       }
       portfolio.tableData.total = total;
       menu.updateBadgeVal(portfolio.tableData.total.moveVal);
+      portfolio.save();
     }
 
     portfolio.setOwned = function(curr, num) {
       data.setOwned(curr, num);
+    }
+
+    portfolio.save = function() {
+      persist.save(STORE_KEY, portfolio.tableData);
+    }
+    portfolio.fetch = function() {
+      persist.fetch(STORE_KEY, (fetched) => angular.merge(portfolio.tableData,
+        fetched));
     }
 
     //bootstrap

@@ -99,7 +99,6 @@ angular.module('coinBalanceApp')
 
     kraken.startTicker = function() {
       kraken.getKrakenTransactionValues().then(function() {
-        kraken.callback();
         setTimeout(kraken.startTicker, 5000);
       });
     }
@@ -163,10 +162,10 @@ angular.module('coinBalanceApp')
         for (let i in tuples) {
           var tuple = tuples[i];
           if (kraken.data.market[tuple.base] && result[tuple.name]) {
-            //var op = result[tuple.name].p[0]; //price at opening
+            var op = result[tuple.name].p[0]; //price at opening
             //var now = result[tuple.name].c[0]; //last trade price
-            var op = result[tuple.name].p[0]; //average mean-by-volume price now
-            var now = result[tuple.name].p[1]; //average mean-by-volume price 24h ago
+            var now = result[tuple.name].p[0]; //average mean-by-volume price now
+            //var now = result[tuple.name].p[1]; //average mean-by-volume price over 24h
             kraken.data.market[tuple.base][tuple.target] = {
               'opening': op,
               'now': now,
@@ -175,6 +174,7 @@ angular.module('coinBalanceApp')
             };
           }
         }
+        kraken.callback();
       });
       return krakenCall;
     }

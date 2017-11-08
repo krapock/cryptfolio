@@ -1,6 +1,5 @@
 angular.module('coinBalanceApp')
   .factory('market', function(data, kraken) {
-
     var market = {
       rates: {},
       listeners: []
