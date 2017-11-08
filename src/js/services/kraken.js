@@ -7,18 +7,46 @@ angular.module('coinBalanceApp')
       },
       listeners: []
     };
-
-    kraken.addListener = function(callback) {
-      kraken.listeners.push(callback);
+    const RATE = {
+      opening: 1,
+      now: 1,
+      move: 0,
+      movePerc: 0
+    };
+    const currenciesMap = {
+      USD: 'ZUSD',
+      EUR: 'ZEUR',
+      ETH: 'XETH',
+      DASH: 'DASH',
+      XBT: 'XXBT'
     }
+    const tuples = [{
+      name: "DASHEUR",
+      base: "DASH",
+      target: "EUR"
+    }, {
+      name: "XXBTZEUR",
+      base: "XBT",
+      target: "EUR"
+    }, {
+      name: "XETHZEUR",
+      base: "ETH",
+      target: "EUR"
+    }, {
+      name: "DASHUSD",
+      base: "DASH",
+      target: "USD"
+    }, {
+      name: "XXBTZUSD",
+      base: "XBT",
+      target: "USD"
+    }, {
+      name: "XETHZUSD",
+      base: "ETH",
+      target: "USD"
+    }];
 
-    kraken.callback = function() {
-      for (let i in kraken.listeners) {
-        kraken.listeners[i](kraken.data.market);
-      }
-    }
-
-    kraken.fixtures = {
+    const fixtures = {
       ticker: {
         "error": [],
         "result": {
@@ -59,6 +87,16 @@ angular.module('coinBalanceApp')
       }
     };
 
+    kraken.addListener = function(callback) {
+      kraken.listeners.push(callback);
+    }
+
+    kraken.callback = function() {
+      for (let i in kraken.listeners) {
+        kraken.listeners[i](kraken.data.market);
+      }
+    }
+
     kraken.startTicker = function() {
       kraken.getKrakenTransactionValues().then(function() {
         kraken.callback();
@@ -69,23 +107,16 @@ angular.module('coinBalanceApp')
     kraken.initializeMarketValues = function() {
       for (var currency in data.currencies) {
         kraken.data.market[currency] = {};
-        kraken.data.market[currency][currency] = {
-          opening: 1,
-          val: 1
-        };
       }
     };
 
     kraken.getKrakenTransactionValues = function() {
-      var apiCurrencies = data.apiMetas.kraken.currencies;
-
-      var getCurrencyPairList = function(baseCurrencies, targetCurrencies,
-        apiCurrencies) {
+      var getCurrencyPairList = function(baseCurrencies, targetCurrencies) {
         var pairs = [];
         for (let base in baseCurrencies) {
           for (let target in targetCurrencies) {
-            let basename = apiCurrencies[baseCurrencies[base]].name;
-            let targetName = apiCurrencies[targetCurrencies[target]].name;
+            let basename = currenciesMap[baseCurrencies[base]];
+            let targetName = currenciesMap[targetCurrencies[target]];
             //avoid same assets and fiat-to-fiat
             if (basename != targetName &&
               (!basename.startsWith('Z') || !targetName.startsWith('Z'))) {
@@ -105,7 +136,7 @@ angular.module('coinBalanceApp')
           if (currenciesPrefs[c].active) bases.push(c);
           if (currenciesPrefs[c].userCurrency) targets.push(c);
         }
-        var pairs = getCurrencyPairList(bases, targets, apiCurrencies);
+        var pairs = getCurrencyPairList(bases, targets);
         return fetchKrakenTickerData(pairs);
       }
 
@@ -115,7 +146,7 @@ angular.module('coinBalanceApp')
           deferred = $q.defer();
           setTimeout(function() {
             deferred.resolve({
-              data: kraken.fixtures.ticker
+              data: fixtures.ticker
             });
           }, 500);
           return (deferred.promise);
@@ -129,40 +160,19 @@ angular.module('coinBalanceApp')
 
       krakenCall.then(function(call) {
         var result = call.data.result;
-        if (kraken.data.market.DASH && result.DASHEUR) {
-          kraken.data.market.DASH['EUR'] = {
-            'opening': result.DASHEUR.o,
-            'val': result.DASHEUR.c[0]
-          };
-        }
-        if (kraken.data.market.XBT && result.XXBTZEUR) {
-          kraken.data.market.XBT['EUR'] = {
-            'opening': result.XXBTZEUR.o,
-            'val': result.XXBTZEUR.c[0]
-          };
-        }
-        if (kraken.data.market.ETH && result.XETHZEUR) {
-          kraken.data.market.ETH['EUR'] = {
-            'opening': result.XETHZEUR.o,
-            'val': result.XETHZEUR.c[0]
-          }
-        }
-        if (kraken.data.market.DASH && result.DASHUSD) {
-          kraken.data.market.DASH['USD'] = {
-            'opening': result.DASHUSD.o,
-            'val': result.DASHUSD.c[0]
-          };
-        }
-        if (kraken.data.market.XBT && result.XXBTZUSD) {
-          kraken.data.market.XBT['USD'] = {
-            'opening': result.XXBTZUSD.o,
-            'val': result.XXBTZUSD.c[0]
-          };
-        }
-        if (kraken.data.market.ETH && result.XETHZUSD) {
-          kraken.data.market.ETH['USD'] = {
-            'opening': result.XETHZUSD.o,
-            'val': result.XETHZUSD.c[0]
+        for (let i in tuples) {
+          var tuple = tuples[i];
+          if (kraken.data.market[tuple.base] && result[tuple.name]) {
+            //var op = result[tuple.name].p[0]; //price at opening
+            //var now = result[tuple.name].c[0]; //last trade price
+            var op = result[tuple.name].p[0]; //average mean-by-volume price now
+            var now = result[tuple.name].p[1]; //average mean-by-volume price 24h ago
+            kraken.data.market[tuple.base][tuple.target] = {
+              'opening': op,
+              'now': now,
+              'move': now - op,
+              'movePerc': (now - op) * 100 / op
+            };
           }
         }
       });

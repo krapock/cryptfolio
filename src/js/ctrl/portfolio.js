@@ -1,52 +1,33 @@
 angular.module('coinBalanceApp')
-  .controller('PortfolioController', function(data, kraken, $scope) {
+  .controller('PortfolioController', function(menu, data, market, $scope) {
 
     var portfolio = this;
     portfolio.currencies = data.currencies;
-    portfolio.market = {};
     portfolio.tableData = {};
     portfolio.userCurrency = data.currencies[data.config.selectedCurrency];
 
     $scope.$watch(() => data.config.selectedCurrency, (curr) => {
       portfolio.userCurrency = data.currencies[curr];
-      portfolio.refreshPortfolioTableData();
+      portfolio.refreshPortfolioTableData(market.rates);
     });
 
-
     portfolio.init = function() {
-      portfolio.initializeMarketValues();
-      kraken.addListener(function(data) {
-        for (var from in data) {
-          for (var to in data) {
-            portfolio.market[from][to] = data[from][to];
-          }
-        }
-        portfolio.refreshPortfolioTableData();
+      portfolio.refreshPortfolioTableData(market.rates);
+      market.addListener(function(data) {
+        portfolio.refreshPortfolioTableData(data);
       });
-      kraken.startTicker();
     };
 
-    portfolio.initializeMarketValues = function() {
-      for (var currency in data.currencies) {
-        portfolio.market[currency] = {};
-        portfolio.market[currency][currency] = {
-          opening: 1,
-          val: 1
-        };
-      }
-      portfolio.refreshPortfolioTableData();
-    };
-
-    portfolio.refreshPortfolioTableData = function() {
+    portfolio.refreshPortfolioTableData = function(rates) {
       var userCurr = data.config.selectedCurrency;
       var total = {
         openingVal: 0,
         val: 0,
         moveVal: 0
       };
-      for (var currency in portfolio.currencies) {
-        var conf = portfolio.currencies[currency];
-        var market = portfolio.market[currency];
+      for (var currency in data.currencies) {
+        var conf = data.currencies[currency];
+        var market = rates[currency];
         var line = {
           openingRate: 0,
           rate: 0,
@@ -58,9 +39,9 @@ angular.module('coinBalanceApp')
 
         if (market[userCurr]) {
           line.openingRate = market[userCurr].opening;
-          line.rate = market[userCurr].val;
-          line.moveRate = line.rate - line.openingRate;
-          line.movePerc = (line.moveRate * 100) / line.openingRate;
+          line.rate = market[userCurr].now;
+          line.moveRate = market[userCurr].move;
+          line.movePerc = market[userCurr].movePerc;
 
           line.openingVal = line.openingRate * conf.owned;
           line.val = line.rate * conf.owned;
@@ -75,6 +56,7 @@ angular.module('coinBalanceApp')
         portfolio.tableData[currency] = line;
       }
       portfolio.tableData.total = total;
+      menu.updateBadgeVal(portfolio.tableData.total.moveVal);
     }
 
     portfolio.setOwned = function(curr, num) {

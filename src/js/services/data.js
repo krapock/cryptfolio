@@ -59,28 +59,6 @@ angular.module('coinBalanceApp')
     data.currencies = {}
     angular.merge(data.currencies, data.currenciesDefaults, data.currenciesConstants);
 
-    data.apiMetas = {
-      kraken: {
-        currencies: {
-          USD: {
-            name: 'ZUSD'
-          },
-          EUR: {
-            name: 'ZEUR'
-          },
-          ETH: {
-            name: 'XETH'
-          },
-          DASH: {
-            name: 'DASH'
-          },
-          XBT: {
-            name: 'XXBT'
-          }
-        }
-      }
-    };
-
     data.fetchSettings = () => {
       settings.fetch((rawUsrData) => {
         //        console.log("fetched settings");
