@@ -20,31 +20,32 @@ angular.module('coinBalanceApp')
       DASH: 'DASH',
       XBT: 'XXBT'
     }
-    const tuples = [{
-      name: "DASHEUR",
-      base: "DASH",
-      target: "EUR"
-    }, {
-      name: "XXBTZEUR",
-      base: "XBT",
-      target: "EUR"
-    }, {
-      name: "XETHZEUR",
-      base: "ETH",
-      target: "EUR"
-    }, {
-      name: "DASHUSD",
-      base: "DASH",
-      target: "USD"
-    }, {
-      name: "XXBTZUSD",
-      base: "XBT",
-      target: "USD"
-    }, {
-      name: "XETHZUSD",
-      base: "ETH",
-      target: "USD"
-    }];
+    const tuples = {
+      "DASHEUR": {
+        base: "DASH",
+        target: "EUR"
+      },
+      "XXBTZEUR": {
+        base: "XBT",
+        target: "EUR"
+      },
+      "XETHZEUR": {
+        base: "ETH",
+        target: "EUR"
+      },
+      "DASHUSD": {
+        base: "DASH",
+        target: "USD"
+      },
+      "XXBTZUSD": {
+        base: "XBT",
+        target: "USD"
+      },
+      "XETHZUSD": {
+        base: "ETH",
+        target: "USD"
+      }
+    };
 
     const fixtures = {
       ticker: {
@@ -98,7 +99,7 @@ angular.module('coinBalanceApp')
     }
 
     kraken.startTicker = function() {
-      kraken.getKrakenTransactionValues().then(function() {
+      kraken.getValuesByOhlc().then(function() {
         setTimeout(kraken.startTicker, 5000);
       });
     }
@@ -109,62 +110,65 @@ angular.module('coinBalanceApp')
       }
     };
 
-    kraken.getKrakenTransactionValues = function() {
-      var getCurrencyPairList = function(baseCurrencies, targetCurrencies) {
-        var pairs = [];
-        for (let base in baseCurrencies) {
-          for (let target in targetCurrencies) {
-            let basename = currenciesMap[baseCurrencies[base]];
-            let targetName = currenciesMap[targetCurrencies[target]];
-            //avoid same assets and fiat-to-fiat
-            if (basename != targetName &&
-              (!basename.startsWith('Z') || !targetName.startsWith('Z'))) {
+    kraken.getPair = function(base, target) {
+      for (pair in tuples) {
+        if (tuples[pair].base == base && tuples[pair].target == target) {
+          return pair;
+        }
+      }
+      return "UNKNOWN";
+    }
 
-              pairs.push(basename.replace(/^[XZ]/, '') + targetName.replace(
-                /^[XZ]/, ''));
-            }
+    kraken.getCurrencyPairList = function() {
+      var baseCurrencies = [];
+      var targetCurrencies = [];
+      for (let c in data.currencies) {
+        if (data.currencies[c].active) baseCurrencies.push(c);
+        if (data.currencies[c].userCurrency) targetCurrencies.push(c);
+      }
+
+      var pairs = [];
+      for (let base in baseCurrencies) {
+        for (let target in targetCurrencies) {
+          let basename = baseCurrencies[base];
+          let targetName = targetCurrencies[target];
+          //avoid same assets and fiat-to-fiat
+          if (basename != targetName &&
+            (!data.currencies[basename].userCurrency || !data.currencies[
+                targetName]
+              .userCurrency)) {
+            pairs.push(kraken.getPair(basename, targetName));
           }
         }
-        return pairs.join(',');
-      };
-
-      var fetchKrakenTickValues = function(currenciesPrefs) {
-        var bases = [];
-        var targets = [];
-        for (let c in currenciesPrefs) {
-          if (currenciesPrefs[c].active) bases.push(c);
-          if (currenciesPrefs[c].userCurrency) targets.push(c);
-        }
-        var pairs = getCurrencyPairList(bases, targets);
-        return fetchKrakenTickerData(pairs);
       }
-
-      var fetchKrakenTickerData = function(pairs) {
-        if (data.config.devmode) {
-          console.info("fake kraken call");
-          deferred = $q.defer();
-          setTimeout(function() {
-            deferred.resolve({
-              data: fixtures.ticker
-            });
-          }, 500);
-          return (deferred.promise);
-        } else {
-          return $http.get("https://api.kraken.com/0/public/Ticker?pair=" +
-            pairs);
-        }
+      return pairs;
+    };
+    kraken.callKrakenTicker = function() {
+      let pairs = kraken.getCurrencyPairList();
+      if (data.config.devmode) {
+        console.info("fake kraken call");
+        deferred = $q.defer();
+        setTimeout(function() {
+          deferred.resolve({
+            data: fixtures.ticker
+          });
+        }, 500);
+        return (deferred.promise);
+      } else {
+        return $http.get("https://api.kraken.com/0/public/Ticker?pair=" +
+          pairs.join(','));
       }
-
-      var krakenCall = fetchKrakenTickValues(data.currencies);
-
+    }
+    kraken.getValuesByTicker = function() {
+      var krakenCall = kraken.callKrakenTicker();
       krakenCall.then(function(call) {
         var result = call.data.result;
-        for (let i in tuples) {
-          var tuple = tuples[i];
-          if (kraken.data.market[tuple.base] && result[tuple.name]) {
-            var op = result[tuple.name].o; //price at opening
+        for (let tupleName in tuples) {
+          var tuple = tuples[tupleName];
+          if (kraken.data.market[tuple.base] && result[tupleName]) {
+            var op = result[tupleName].o; //price at opening
             //var now = result[tuple.name].c[0]; //last trade price
-            var now = result[tuple.name].p[0]; //average mean-by-volume price now
+            var now = result[tupleName].p[0]; //average mean-by-volume price now
             //var now = result[tuple.name].p[1]; //average mean-by-volume price over 24h
             kraken.data.market[tuple.base][tuple.target] = {
               'opening': op,
@@ -179,6 +183,40 @@ angular.module('coinBalanceApp')
       return krakenCall;
     }
 
+    kraken.callOhlc = function(pair) {
+      let sinceDate = Math.floor(new Date().getTime() / 1000) - 1500;
+      return $http.get("https://api.kraken.com/0/public/OHLC?pair=" + pair +
+        "&since=" + sinceDate);
+    }
+    kraken.getValuesByOhlc = function() {
+        let pairs = kraken.getCurrencyPairList();
+        let calls = [];
+        for (let pairNb in pairs) {
+          let pair = pairs[pairNb];
+          let call = kraken.callOhlc(pair);
+          call.then(call => {
+            var result = call.data.result;
+            let tuple = tuples[Object.keys(result)[0]];
+            let op = result[pair][0][1];
+            let now = result[pair][result[pair].length - 1][4];
+            kraken.data.market[tuple.base][tuple.target] = {
+              'opening': op,
+              'now': now,
+              'move': now - op,
+              'movePerc': (now - op) * 100 / op
+            };
+          });
+          calls.push(call);
+        }
+        var generalPromise = $q.all(calls);
+        generalPromise.then(kraken.callback);
+        return generalPromise;
+      }
+      //for each pair :
+      // date == Math.floor(new Date().getTime()/1000)-1440
+      // https://api.kraken.com/0/public/OHLC?pair=XBTCZEUR&since=1510212072
+      // opening = response.result.XXBTZEUR[0][1]
+      // closing = response.result.XXBTZEUR[-1][4]
 
     kraken.initializeMarketValues();
     return kraken;
