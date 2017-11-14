@@ -184,7 +184,8 @@ angular.module('coinBalanceApp')
     }
 
     kraken.callOhlc = function(pair) {
-      let sinceDate = Math.floor(new Date().getTime() / 1000) - 1500;
+      const DAY_IN_SEC = 60 * 60 * 24;
+      let sinceDate = Math.floor(new Date().getTime() / 1000) - DAY_IN_SEC;
       return $http.get("https://api.kraken.com/0/public/OHLC?pair=" + pair +
         "&since=" + sinceDate);
     }
