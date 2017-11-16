@@ -7,6 +7,7 @@ angular.module('coinBalanceApp')
       },
       listeners: []
     };
+    const DAY_IN_SEC = 60 * 60 * 24;
     const RATE = {
       opening: 1,
       now: 1,
@@ -99,8 +100,9 @@ angular.module('coinBalanceApp')
     }
 
     kraken.startTicker = function() {
-      kraken.getValuesByOhlc().then(function() {
-        setTimeout(kraken.startTicker, 5000);
+      kraken.getValuesByOhlc().finally(function() {
+        const SECOND = 1000;
+        setTimeout(kraken.startTicker, 15 * SECOND);
       });
     }
 
@@ -184,10 +186,11 @@ angular.module('coinBalanceApp')
     }
 
     kraken.callOhlc = function(pair) {
-      const DAY_IN_SEC = 60 * 60 * 24;
-      let sinceDate = Math.floor(new Date().getTime() / 1000) - DAY_IN_SEC;
+
+      let sinceDate = Math.floor(new Date().getTime() / 1000) - DAY_IN_SEC -
+        600;
       return $http.get("https://api.kraken.com/0/public/OHLC?pair=" + pair +
-        "&since=" + sinceDate);
+        "&interval=5&since=" + sinceDate);
     }
     kraken.getValuesByOhlc = function() {
         let pairs = kraken.getCurrencyPairList();
@@ -198,8 +201,21 @@ angular.module('coinBalanceApp')
           call.then(call => {
             var result = call.data.result;
             let tuple = tuples[Object.keys(result)[0]];
-            let op = result[pair][0][1];
+            let nowDate = result[pair][result[pair].length - 1][0];
             let now = result[pair][result[pair].length - 1][4];
+
+            let op = result[pair][0][1];
+            let opDate = nowDate - (DAY_IN_SEC);
+            for (let resultNb in result[pair]) {
+              var entryDate = result[pair][resultNb][0];
+              if (entryDate == opDate) {
+                op = result[pair][resultNb][1];
+                console.info("Entry found on #" + resultNb + "/" + result[
+                  pair].length);
+                break;
+              }
+            }
+
             kraken.data.market[tuple.base][tuple.target] = {
               'opening': op,
               'now': now,
