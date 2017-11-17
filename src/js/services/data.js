@@ -1,9 +1,14 @@
 angular.module('coinBalanceApp')
   .factory('data', function(settings) {
+
+    const SECOND = 1000;
+    const MINUTE = 60 * SECOND;
+
     var data = {};
     data.config = {
       selectedCurrency: 'EUR',
       devmode: false,
+      refreshdelay: 5 * MINUTE,
     };
     data.currenciesConstants = {
       XBT: {

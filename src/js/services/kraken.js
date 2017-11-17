@@ -101,8 +101,7 @@ angular.module('coinBalanceApp')
 
     kraken.startTicker = function() {
       kraken.getValuesByOhlc().finally(function() {
-        const SECOND = 1000;
-        setTimeout(kraken.startTicker, 15 * SECOND);
+        setTimeout(kraken.startTicker, data.config.refreshdelay);
       });
     }
 

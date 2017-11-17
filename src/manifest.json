@@ -12,5 +12,8 @@
   "permissions": [
     "storage",
     "https://api.kraken.com/"
-  ]
+  ],
+  "background": {
+    "page": "background.html"
+  }
 }

@@ -3,10 +3,16 @@ angular.module('coinBalanceApp')
 
     var config = this;
     config.currencies = data.currencies;
-    config.main = data.config;
 
-    $scope.$watch(() => data.config.selectedCurrency, (curr) => {
-      config.main = data.config;
+    config.reloadMainConf = () => {
+      config.main = {
+        selectedCurrency: data.config.selectedCurrency,
+        refreshdelay: data.config.refreshdelay / 1000
+      }
+    }
+    $scope.$watch(() => data.config.selectedCurrency + "#" + data.config.refreshdelay, (
+      curr) => {
+      config.reloadMainConf();
     });
 
     config.toggle = (cur) => {
@@ -17,4 +23,11 @@ angular.module('coinBalanceApp')
       data.config.selectedCurrency = cur;
       data.saveSettings();
     }
+
+    config.updateDelay = () => {
+      data.config.refreshdelay = config.main.refreshdelay * 1000;
+      data.saveSettings();
+      config.reloadMainConf();
+    }
+    config.reloadMainConf();
   });
