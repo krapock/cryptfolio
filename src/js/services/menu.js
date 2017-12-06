@@ -53,7 +53,7 @@ angular.module('coinBalanceApp')
       } else if (absval < 10000) {
         return ('' + value).substr(0, 4);
       } else {
-        return ('' + value / 1000).substr(0, 3) + 'k';
+        return menu.cleanVal(absval/1000);
       }
       return "?";
     }
