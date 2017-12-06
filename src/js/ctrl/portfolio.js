@@ -63,9 +63,14 @@ angular.module('coinBalanceApp')
       menu.updateLine1Val(portfolio.tableData["XBT"].rate);
       menu.updateLine2Val(portfolio.tableData.total.moveVal);
       menu.updateTooltip(
-        (portfolio.tableData["XBT"].movePerc > 0 ? '+' : '') +
-        (Math.round(portfolio.tableData["XBT"].movePerc * 100) / 100) +
-        "%"
+        "BTC:"
+        + portfolio.tableData["XBT"].rate 
+        + " | "
+        + (portfolio.tableData["XBT"].movePerc > 0 ? '+' : '')
+        + (Math.round(portfolio.tableData["XBT"].movePerc * 100) / 100)
+        + "%"
+        + " | "
+        + (new Date().toString().replace(/^.* (\d+:\d+:\d+) .*$/,"$1"))
       );
       portfolio.save();
     }
