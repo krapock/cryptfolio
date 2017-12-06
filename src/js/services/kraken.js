@@ -221,12 +221,11 @@ angular.module('coinBalanceApp')
               'move': now - op,
               'movePerc': (now - op) * 100 / op
             };
+            kraken.callback()
           });
           calls.push(call);
         }
-        var generalPromise = $q.all(calls);
-        generalPromise.then(kraken.callback);
-        return generalPromise;
+        return $q.all(calls);
       }
       //for each pair :
       // date == Math.floor(new Date().getTime()/1000)-1440
